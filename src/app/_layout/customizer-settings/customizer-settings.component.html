@@ -1,0 +1,60 @@
+<div
+    class="settings-sidebar bg-white box-shadow"
+    [ngClass]="{'active': isToggled}"
+    [class.component-dark-theme]="themeService.isDark()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+    <div class="settings-header bg-gray p-20">
+        <div class="d-flex flex-column align-items-center justify-content-space-between">
+            <img [src]="isDark ? 'assets/img/white-logo.png' :'assets/img/logo-icon.png'" width="122px" style="margin-top: 0.5rem;" alt="logo-icon">
+            <h5 class="m-0">Panel de configuración</h5>
+        </div>
+    </div>
+    <ng-scrollbar visibility="hover">
+        <div class="settings-body">
+            <div class="p-20">
+                <span class="sub-title d-block mb-12 fw-semibold">Modo RTL</span>
+                <button (click)="toggleRTLEnabledTheme()" class="switch-btn" [class.active]="themeService.isRTLEnabled()"></button>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="p-20">
+                <span class="sub-title d-block mb-12 fw-semibold">Tema Oscuro</span>
+                <button (click)="toggleTheme()" class="switch-btn" [class.active]="themeService.isDark()"></button>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="p-20">
+                <span class="sub-title d-block mb-12 fw-semibold">Solo Menu Tema Oscuro</span>
+                <button (click)="toggleSidebarTheme()" class="switch-btn" [class.active]="themeService.isSidebarDark()"></button>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="p-20">
+                <span class="sub-title d-block mb-12 fw-semibold">Solo Cabecera Tema Oscuro</span>
+                <button (click)="toggleHeaderTheme()" class="switch-btn" [class.active]="themeService.isHeaderDark()"></button>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="p-20">
+                <span class="sub-title d-block mb-12 fw-semibold">Menu a la Derecha</span>
+                <button (click)="toggleRightSidebarTheme()" class="switch-btn" [class.active]="themeService.isRightSidebar()"></button>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="p-20">
+                <span class="sub-title d-block mb-12 fw-semibold">Ocultar Menu</span>
+                <button (click)="toggleHideSidebarTheme()" class="switch-btn" [class.active]="themeService.isHideSidebar()"></button>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="p-20">
+                <span class="sub-title d-block mb-12 fw-semibold">Realzar bordes de tarjetas</span>
+                <button (click)="toggleCardBorderTheme()" class="switch-btn" [class.active]="themeService.isCardBorder()"></button>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="p-20">
+                <span class="sub-title d-block mb-12 fw-semibold">Redondear tarjetas</span>
+                <button (click)="toggleCardBorderRadiusTheme()" class="switch-btn" [class.active]="themeService.isCardBorderRadius()"></button>
+            </div>
+        </div>
+    </ng-scrollbar>
+</div>
+
+<button mat-fab class="dms settings-btn" color="primary" (click)="toggle()" [ngClass]="{'active': isToggled}" [class.component-rtl-enabled]="themeService.isRTLEnabled()">
+    <mat-icon >settings</mat-icon>
+</button>

@@ -1,0 +1,126 @@
+<div class="create-dialog-box scrollable-dialog">
+    <div class="dialog-header">
+        <h3 class="dialog-title">{{ getDialogTitle() }}</h3>
+        <button class="close-btn" (click)="close()" [disabled]="isLoading">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <form [formGroup]="taskForm" (ngSubmit)="submit()" class="task-form">
+        <mat-card class="mb-25 tagus-card">
+            <mat-card-content>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12">
+                        <div class="dms-form-group">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Título de la Tarea</mat-label>
+                                <mat-icon matPrefix>assignment</mat-icon>
+                                <input 
+                                    matInput 
+                                    formControlName="titleTask" 
+                                    required
+                                    [disabled]="isLoading"
+                                    maxlength="200"
+                                    placeholder="Ej: Implementar módulo de usuarios">
+                                <mat-hint align="end">{{taskForm.get('titleTask')?.value?.length || 0}}/200</mat-hint>
+                                @if (hasError('titleTask', 'required')) {
+                                    <mat-error>Este campo es obligatorio</mat-error>
+                                }
+                                @if (hasError('titleTask', 'minlength')) {
+                                    <mat-error>Mínimo 3 caracteres</mat-error>
+                                }
+                                @if (hasError('titleTask', 'maxlength')) {
+                                    <mat-error>Máximo 200 caracteres</mat-error>
+                                }
+                                @if (taskForm.get('titleTask')?.value && !isTitleValid()) {
+                                    <mat-error>El título debe tener al menos 3 caracteres</mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12 col-md-12">
+                        <div class="dms-form-group">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Descripción (Opcional)</mat-label>
+                                <mat-icon matPrefix>description</mat-icon>
+                                <textarea 
+                                    matInput 
+                                    formControlName="descriptionTask"
+                                    [disabled]="isLoading"
+                                    maxlength="1000"
+                                    rows="4"
+                                    placeholder="Describe los detalles de la tarea..."></textarea>
+                                <mat-hint align="end">{{taskForm.get('descriptionTask')?.value?.length || 0}}/1000</mat-hint>
+                                @if (hasError('descriptionTask', 'maxlength')) {
+                                    <mat-error>Máximo 1000 caracteres</mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6">
+                        <div class="dms-form-group without-icon">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Estado de la Tarea</mat-label>
+                                <mat-select 
+                                    formControlName="taskStatusId" 
+                                    required
+                                    [disabled]="isLoading">
+                                    @for (status of taskStatuses; track status.id) {
+                                        <mat-option [value]="status.id">
+                                            <div class="status-option" [ngClass]="'status-' + status.id">
+                                                <div class="status-indicator"></div>
+                                                <mat-icon class="status-icon">{{ status.icon }}</mat-icon>
+                                                <span>{{ status.name }}</span>
+                                            </div>
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                                @if (hasError('taskStatusId', 'required')) {
+                                    <mat-error>Debe seleccionar un estado</mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <div class="actions-section">
+            <button 
+                type="button" 
+                class="default-btn gray" 
+                (click)="close()"
+                [disabled]="isLoading">
+                <mat-icon>close</mat-icon>
+                Cancelar
+            </button>
+            
+            <button 
+                type="submit" 
+                class="default-btn"
+                [disabled]="taskForm.invalid || isLoading || loadingUsers">
+                @if (isLoading) {
+                    <div class="spinner">
+                        <mat-icon>refresh</mat-icon>
+                    </div>
+                } @else {
+                    <mat-icon>{{ isEdit ? 'update' : 'add_task' }}</mat-icon>
+                }
+                {{ getSubmitButtonText() }}
+            </button>
+        </div>
+    </form>
+
+    @if (isLoading) {
+        <div class="loading-overlay">
+            <div class="loading-content">
+                <div class="spinner-large">
+                    <mat-icon>refresh</mat-icon>
+                </div>
+                <p>{{ isEdit ? 'Actualizando tarea...' : 'Creando tarea...' }}</p>
+            </div>
+        </div>
+    }
+</div>

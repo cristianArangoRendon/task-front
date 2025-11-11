@@ -1,0 +1,115 @@
+<div class="loading-overlay">
+  <div class="loading-content" [ngClass]="size">
+    <div class="animated-background">
+      <div class="wave wave-1"></div>
+      <div class="wave wave-2"></div>
+      <div class="wave wave-3"></div>
+    </div>
+
+    <div class="rings-container">
+      <div class="ring ring-1"></div>
+      <div class="ring ring-2"></div>
+      <div class="ring ring-3"></div>
+      <div class="ring ring-4"></div>
+    </div>
+
+    <div class="loader-wrapper">
+      <div class="loader-center">
+        @if (type === 'spinner') {
+          <div class="spinner-container">
+            <div class="orbital-container">
+              <div class="orbital orbital-1"></div>
+              <div class="orbital orbital-2"></div>
+              <div class="orbital orbital-3"></div>
+            </div>
+            <div class="spinner-outer">
+              <mat-progress-spinner
+                [diameter]="size === 'small' ? 70 : size === 'medium' ? 90 : 110"
+                mode="indeterminate"
+                color="primary"
+                class="custom-spinner">
+              </mat-progress-spinner>
+            </div>
+            <div class="spinner-core">
+              <div class="core-inner">
+                <div class="core-pulse"></div>
+                <div class="core-glow"></div>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (type === 'bar') {
+          <div class="custom-loader">
+            <div class="loader-circle-container">
+              <svg class="loader-svg" viewBox="0 0 100 100">
+                <circle class="loader-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="loader-circle-progress" cx="50" cy="50" r="45"></circle>
+              </svg>
+              <div class="loader-center-text">
+                <span class="loader-icon">⚡</span>
+              </div>
+            </div>
+            <div class="loader-bars">
+              @for (bar of [1,2,3,4,5,6,7,8,9,10,11,12]; track bar) {
+                <div class="bar-item" [style.animation-delay.s]="bar * 0.08"></div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="message-wrapper">
+      <div class="message-content">
+        <h3 class="loading-message">
+          <span class="message-text">{{ message === "" ? "Cargando" : message }}</span>
+          <span class="dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </span>
+        </h3>
+        <div class="progress-text">
+          <span class="progress-label">Procesando datos</span>
+          <span class="progress-separator">•</span>
+          <span class="progress-status">Por favor espere</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="particles">
+      @for (p of [1,2,3,4,5,6,7,8,9,10,11,12]; track p) {
+        <div class="particle"></div>
+      }
+    </div>
+
+    <div class="corner-details">
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+    </div>
+  </div>
+
+  <svg style="position: absolute; width: 0; height: 0;">
+    <defs>
+      <linearGradient id="spinner-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#3f51b5;stop-opacity:1" />
+        <stop offset="50%" style="stop-color:#64b5f6;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#90caf9;stop-opacity:1" />
+      </linearGradient>
+      <linearGradient id="circle-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#3f51b5;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#64b5f6;stop-opacity:1" />
+      </linearGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
+</div>

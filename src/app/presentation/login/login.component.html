@@ -1,0 +1,124 @@
+<div class="premium-login-container">
+    <div class="animated-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="mesh-gradient"></div>
+    </div>
+
+    <div class="glass-card" 
+         [class.dark-mode]="themeService.isDark()"
+         [class.rtl-mode]="themeService.isRTLEnabled()">
+        
+        <div class="brand-header">
+            <div class="brand-icon">
+                <img 
+                    src="assets/img/logo.png" 
+                    alt="Stockly Logo" 
+                    class="brand-logo">
+                <div class="icon-glow"></div>
+            </div>
+            <div class="brand-text">
+                <h1>Sistema Empresarial</h1>
+                <p>Acceso Seguro</p>
+            </div>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+            
+            <div class="form-group">
+                <div class="floating-label-group">
+                    <div class="input-icon-wrapper">
+                        <mat-icon>alternate_email</mat-icon>
+                    </div>
+                    <input 
+                        type="email"
+                        class="glass-input"
+                        formControlName="email"
+                        placeholder=" "
+                        autocomplete="username"
+                        id="email-input"
+                        [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                    <label for="email-input" class="floating-label">Correo Electrónico</label>
+                    <div class="input-border"></div>
+                </div>
+                <div class="validation-error" 
+                     *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                    <mat-icon>error_outline</mat-icon>
+                    <span>{{ getEmailErrorMessage() }}</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="floating-label-group">
+                    <div class="input-icon-wrapper">
+                        <mat-icon>lock_outline</mat-icon>
+                    </div>
+                    <input 
+                        [type]="hidePassword ? 'password' : 'text'"
+                        class="glass-input"
+                        formControlName="password"
+                        placeholder=" "
+                        autocomplete="current-password"
+                        id="password-input"
+                        [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                    <label for="password-input" class="floating-label">Contraseña</label>
+                    <button 
+                        type="button"
+                        class="password-toggle"
+                        (click)="togglePasswordVisibility($event)">
+                        <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
+                    <div class="input-border"></div>
+                </div>
+                <div class="validation-error" 
+                     *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                    <mat-icon>error_outline</mat-icon>
+                    <span>{{ getPasswordErrorMessage() }}</span>
+                </div>
+            </div>
+
+            <div class="info-chip" 
+                 *ngIf="loginForm.get('password')?.touched && !loginForm.get('password')?.value">
+                <mat-icon>security</mat-icon>
+                <span>Mínimo 8 caracteres para mayor seguridad</span>
+            </div>
+
+            <button 
+                type="submit"
+                class="premium-button"
+                [disabled]="!canSubmit">
+                <div class="button-bg"></div>
+                <div class="button-content">
+                    <ng-container *ngIf="!isLoading; else loadingTemplate">
+                        <span>Acceder</span>
+                        <mat-icon>arrow_forward_ios</mat-icon>
+                    </ng-container>
+                    <ng-template #loadingTemplate>
+                        <mat-spinner diameter="22"></mat-spinner>
+                        <span>Verificando...</span>
+                    </ng-template>
+                </div>
+            </button>
+
+        </form>
+
+        <div class="trust-badges">
+            <div class="badge">
+                <mat-icon>https</mat-icon>
+                <span>256-bit SSL</span>
+            </div>
+            <div class="badge">
+                <mat-icon>verified</mat-icon>
+                <span>Autenticación Segura</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="floating-shapes">
+        <div class="shape shape-square"></div>
+        <div class="shape shape-circle"></div>
+        <div class="shape shape-triangle"></div>
+    </div>
+</div>

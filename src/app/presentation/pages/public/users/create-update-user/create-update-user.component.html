@@ -1,0 +1,262 @@
+<div class="create-dialog-box scrollable-dialog">
+    <div class="dialog-header">
+        <h3 class="dialog-title">{{ getDialogTitle() }}</h3>
+        <button class="close-btn" (click)="close()" [disabled]="isLoading">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <form [formGroup]="userForm" (ngSubmit)="submit()" class="user-form">
+        <mat-card class="mb-25 tagus-card">
+            <mat-card-content>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12">
+                        <div class="dms-form-group">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Nombre Completo</mat-label>
+                                <mat-icon matPrefix>person</mat-icon>
+                                <input 
+                                    matInput 
+                                    formControlName="nameUser" 
+                                    required
+                                    [disabled]="isLoading"
+                                    maxlength="100"
+                                    >
+                                <mat-hint align="end">{{userForm.get('nameUser')?.value?.length || 0}}/100</mat-hint>
+                                @if (hasError('nameUser', 'required')) {
+                                    <mat-error>Este campo es obligatorio</mat-error>
+                                }
+                                @if (hasError('nameUser', 'minlength')) {
+                                    <mat-error>Mínimo 3 caracteres</mat-error>
+                                }
+                                @if (hasError('nameUser', 'maxlength')) {
+                                    <mat-error>Máximo 100 caracteres</mat-error>
+                                }
+                                @if (userForm.get('nameUser')?.value && !isNameValid()) {
+                                    <mat-error>Solo se permiten letras y espacios</mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6">
+                        <div class="dms-form-group">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Email</mat-label>
+                                <mat-icon matPrefix>email</mat-icon>
+                                <input 
+                                    matInput 
+                                    formControlName="emailUser" 
+                                    required
+                                    type="email"
+                                    [disabled]="isLoading"
+                                    maxlength="100"
+                                   >
+                                <mat-hint align="end">{{userForm.get('emailUser')?.value?.length || 0}}/100</mat-hint>
+                                @if (hasError('emailUser', 'required')) {
+                                    <mat-error>Este campo es obligatorio</mat-error>
+                                }
+                                @if (hasError('emailUser', 'email')) {
+                                    <mat-error>Ingrese un email válido</mat-error>
+                                }
+                                @if (hasError('emailUser', 'maxlength')) {
+                                    <mat-error>Máximo 100 caracteres</mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6">
+                        <div class="dms-form-group">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Teléfono (Opcional)</mat-label>
+                                <mat-icon matPrefix>phone</mat-icon>
+                                <input 
+                                    matInput 
+                                    formControlName="phoneUser"
+                                    [disabled]="isLoading"
+                                    maxlength="20"
+                                    >
+                                <mat-hint align="end">{{userForm.get('phoneUser')?.value?.length || 0}}/20</mat-hint>
+                                @if (hasError('phoneUser', 'maxlength')) {
+                                    <mat-error>Máximo 20 caracteres</mat-error>
+                                }
+                                @if (userForm.get('phoneUser')?.value && !isPhoneValid()) {
+                                    <mat-error>Formato de teléfono inválido</mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12 col-md-12">
+                        <div class="dms-form-group">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Especialidades (Opcional)</mat-label>
+                                <mat-icon matPrefix>work</mat-icon>
+                                <textarea 
+                                    matInput 
+                                    formControlName="specialitiesUser"
+                                    [disabled]="isLoading"
+                                    maxlength="255"
+                                    rows="3"
+                                    ></textarea>
+                                <mat-hint align="end">{{userForm.get('specialitiesUser')?.value?.length || 0}}/255</mat-hint>
+                                @if (hasError('specialitiesUser', 'maxlength')) {
+                                    <mat-error>Máximo 255 caracteres</mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    @if (!isEdit) {
+                        <div class="col-lg-6 col-md-6">
+                            <div class="dms-form-group password-field">
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Contraseña</mat-label>
+                                    <mat-icon matPrefix>lock</mat-icon>
+                                    <input 
+                                        matInput 
+                                        formControlName="password" 
+                                        required
+                                        [type]="showPassword ? 'text' : 'password'"
+                                        [disabled]="isLoading"
+                                        maxlength="100">
+                                    <div matSuffix class="password-actions">
+                                        <button 
+                                            mat-icon-button 
+                                            type="button"
+                                            (click)="togglePasswordVisibility()"
+                                            [disabled]="isLoading"
+                                            matTooltip="{{ showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña' }}">
+                                            <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                                        </button>
+                                        <button 
+                                            mat-icon-button 
+                                            type="button"
+                                            (click)="generateRandomPassword()"
+                                            [disabled]="isLoading"
+                                            matTooltip="Generar contraseña aleatoria">
+                                            <mat-icon>refresh</mat-icon>
+                                        </button>
+                                        <button 
+                                            mat-icon-button 
+                                            type="button"
+                                            (click)="copyPasswordToClipboard()"
+                                            [disabled]="isLoading || !userForm.get('password')?.value"
+                                            matTooltip="Copiar contraseña">
+                                            <mat-icon>content_copy</mat-icon>
+                                        </button>
+                                    </div>
+                                    <mat-hint align="end">{{userForm.get('password')?.value?.length || 0}}/100</mat-hint>
+                                    @if (hasError('password', 'required')) {
+                                        <mat-error>Este campo es obligatorio</mat-error>
+                                    }
+                                    @if (hasError('password', 'minlength')) {
+                                        <mat-error>Mínimo 6 caracteres</mat-error>
+                                    }
+                                    @if (hasError('password', 'maxlength')) {
+                                        <mat-error>Máximo 100 caracteres</mat-error>
+                                    }
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6">
+                            <div class="dms-form-group">
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Confirmar Contraseña</mat-label>
+                                    <mat-icon matPrefix>lock_outline</mat-icon>
+                                    <input 
+                                        matInput 
+                                        formControlName="confirmPassword" 
+                                        required
+                                        [type]="showConfirmPassword ? 'text' : 'password'"
+                                        [disabled]="isLoading"
+                                        maxlength="100">
+                                    <button 
+                                        matSuffix 
+                                        mat-icon-button 
+                                        type="button"
+                                        class="single-action-btn"
+                                        (click)="toggleConfirmPasswordVisibility()"
+                                        [disabled]="isLoading"
+                                        matTooltip="{{ showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña' }}">
+                                        <mat-icon>{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                                    </button>
+                                    @if (hasError('confirmPassword', 'required')) {
+                                        <mat-error>Este campo es obligatorio</mat-error>
+                                    }
+                                    @if (hasError('confirmPassword', 'mismatch')) {
+                                        <mat-error>Las contraseñas no coinciden</mat-error>
+                                    }
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    }
+
+                    @if (isEdit) {
+                        <div class="col-lg-12 col-md-12">
+                            <div class="dms-form-group without-icon">
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Estado del usuario</mat-label>
+                                    <mat-select formControlName="isActiveUser" [disabled]="isLoading">
+                                        <mat-option [value]="true">
+                                            <div class="status-option active">
+                                                <div class="status-indicator"></div>
+                                                <mat-icon class="status-icon">check_circle</mat-icon>
+                                                <span>Activo</span>
+                                            </div>
+                                        </mat-option>
+                                        <mat-option [value]="false">
+                                            <div class="status-option inactive">
+                                                <div class="status-indicator"></div>
+                                                <mat-icon class="status-icon">cancel</mat-icon>
+                                                <span>Inactivo</span>
+                                            </div>
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <div class="actions-section">
+            <button 
+                type="button" 
+                class="default-btn gray" 
+                (click)="close()"
+                [disabled]="isLoading">
+                <mat-icon>close</mat-icon>
+                Cancelar
+            </button>
+            
+            <button 
+                type="submit" 
+                class="default-btn"
+                [disabled]="userForm.invalid || isLoading">
+                @if (isLoading) {
+                    <div class="spinner">
+                        <mat-icon>refresh</mat-icon>
+                    </div>
+                } @else {
+                    <mat-icon>{{ isEdit ? 'update' : 'person_add' }}</mat-icon>
+                }
+                {{ getSubmitButtonText() }}
+            </button>
+        </div>
+    </form>
+
+    @if (isLoading) {
+        <div class="loading-overlay">
+            <div class="loading-content">
+                <div class="spinner-large">
+                    <mat-icon>refresh</mat-icon>
+                </div>
+                <p>{{ isEdit ? 'Actualizando usuario...' : 'Creando usuario...' }}</p>
+            </div>
+        </div>
+    }
+</div>

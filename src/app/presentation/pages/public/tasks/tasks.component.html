@@ -1,0 +1,242 @@
+@if (isLoading) {
+<app-loading message="Cargando tareas"></app-loading>
+} @if (!isLoading) {
+<div class="header-actions-card mb-25">
+    <div class="d-flex align-items-center">
+        <h6 class="mb-0">Gestión de Tareas</h6>
+        <div class="header-buttons ms-auto">
+            <button
+                mat-raised-button
+                class="primary-btn"
+                (click)="addNewTask()"
+            >
+                <mat-icon>add_task</mat-icon>
+                Crear Tarea
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="filter-card mb-25">
+    <div class="filter-header">
+        <mat-icon class="filter-icon">filter_alt</mat-icon>
+        <h6>Filtrar Tareas</h6>
+    </div>
+    <form [formGroup]="filterForm" class="filter-form">
+        <div class="filter-controls">
+            <div class="filter-item">
+                <label>
+                    <mat-icon>search</mat-icon>
+                    Buscar
+                </label>
+                <input
+                    type="text"
+                    formControlName="searchTerm"
+                    placeholder="Título de tarea..."
+                    class="search-input"
+                />
+            </div>
+            <div class="filter-item">
+                <label>
+                    <mat-icon>assignment</mat-icon>
+                    Estado de Tarea
+                </label>
+                <select formControlName="taskStatusId" class="status-select">
+                    <option [value]="null">Todos</option>
+                    @for (status of taskStatuses; track status.id) {
+                    <option [value]="status.id">{{ status.name }}</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button
+                type="button"
+                mat-raised-button
+                class="apply-btn"
+                (click)="applyFilters()"
+            >
+                <mat-icon>check</mat-icon>
+                Aplicar Filtros
+            </button>
+            <button
+                type="button"
+                mat-raised-button
+                class="clear-btn"
+                (click)="clearFilters()"
+            >
+                <mat-icon>clear</mat-icon>
+                Limpiar
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="pagination-controls-card mb-25">
+    <div class="pagination-controls">
+        <div class="control-group">
+            <mat-icon class="control-icon">grid_view</mat-icon>
+            <div class="control-item">
+                <label>Página</label>
+                <input
+                    type="number"
+                    min="1"
+                    [max]="getTotalPages()"
+                    [(ngModel)]="currentPage"
+                    (change)="onPageChange()"
+                    class="page-input"
+                />
+                <span class="total-info">de {{ getTotalPages() }}</span>
+            </div>
+            <div class="control-item">
+                <label>Por página</label>
+                <select
+                    [(ngModel)]="pageSize"
+                    (change)="onPageSizeChange()"
+                    class="size-select"
+                >
+                    <option [value]="6">6</option>
+                    <option [value]="12">12</option>
+                    <option [value]="24">24</option>
+                    <option [value]="48">48</option>
+                </select>
+            </div>
+        </div>
+        <div class="pagination-info">
+            <mat-icon class="info-icon">info</mat-icon>
+            <span>
+                Mostrando <strong>{{ getStartRecord() }}</strong> -
+                <strong>{{ getEndRecord() }}</strong> de
+                <strong>{{ totalRecords }}</strong> tareas
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    @for (task of dataSource.data; track trackByTaskId($index, task)) {
+    <div class="col-sm-6">
+        <mat-card class="mb-25 task-card" [class.completed]="task.isCompleted">
+            <mat-card-header>
+                <div class="task-header-content">
+                    <div class="task-title">
+                        <h5 class="mb-2">{{ task.titleTask }}</h5>
+                        <span
+                            class="task-status"
+                            [ngClass]="getTaskStatusClass(task)"
+                        >
+                            <mat-icon>{{ getTaskStatusIcon(task) }}</mat-icon>
+                            {{ getTaskStatusText(task) }}
+                        </span>
+                    </div>
+                </div>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="task-info">
+                    @if (task.descriptionTask) {
+                    <div class="info-row">
+                        <div class="info-item full-width">
+                            <mat-icon class="info-icon">description</mat-icon>
+                            <div class="info-content">
+                                <span class="info-label">Descripción</span>
+                                <span class="info-value">{{
+                                    task.descriptionTask
+                                }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    <div class="info-row">
+                        <div class="info-item">
+                            <mat-icon class="info-icon">badge</mat-icon>
+                            <div class="info-content">
+                                <span class="info-label">ID Tarea</span>
+                                <span class="info-value"
+                                    >#{{ task.taskId }}</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-item">
+                            <mat-icon class="info-icon"
+                                >calendar_today</mat-icon
+                            >
+                            <div class="info-content">
+                                <span class="info-label">Creada</span>
+                                <span class="info-value">{{
+                                    getFormattedDate(task.createdAtTask)
+                                }}</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <mat-icon class="info-icon">update</mat-icon>
+                            <div class="info-content">
+                                <span class="info-label">Actualizada</span>
+                                <span class="info-value">{{
+                                    getFormattedDate(task.updatedAtTask)
+                                }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="task-actions mt-3">
+                    <button
+                        mat-raised-button
+                        class="complete-btn me-2"
+                        [class.completed]="task.taskStatusId === 2"
+                        (click)="toggleTaskCompletion(task)"
+                    >
+                        <mat-icon>{{
+                            task.taskStatusId === 2 ? "undo" : "check"
+                        }}</mat-icon>
+                        {{
+                            task.taskStatusId === 2
+                                ? "Poner Pendiente"
+                                : "Completar"
+                        }}
+                    </button>
+                    <button
+                        mat-raised-button
+                        class="edit-btn me-2"
+                        (click)="editTask(task)"
+                    >
+                        <mat-icon>edit</mat-icon>
+                        Editar
+                    </button>
+                    <button
+                        mat-raised-button
+                        class="delete-btn"
+                        (click)="deleteTask(task)"
+                    >
+                        <mat-icon>delete</mat-icon>
+                        Eliminar
+                    </button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+    }
+</div>
+
+@if (dataSource.data.length === 0) {
+<div class="empty-state-card">
+    <mat-card class="text-center py-5">
+        <mat-card-content>
+            <mat-icon class="empty-icon mb-3">task_alt</mat-icon>
+            <h4 class="mb-3">No hay tareas registradas</h4>
+            <p class="text-muted mb-4">
+                Comienza agregando la primera tarea al sistema
+            </p>
+            <button
+                mat-raised-button
+                class="primary-btn"
+                (click)="addNewTask()"
+            >
+                <mat-icon>add_task</mat-icon>
+                Agregar Tarea
+            </button>
+        </mat-card-content>
+    </mat-card>
+</div>
+} }

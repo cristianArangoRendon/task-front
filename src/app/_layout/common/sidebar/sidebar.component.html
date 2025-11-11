@@ -1,0 +1,54 @@
+<div class="sidebar-area bg-white box-shadow"
+     [ngClass]="{
+       'active': isToggled,
+       'dark-sidebar': themeService.isSidebarDark(),
+       'right-sidebar': themeService.isRightSidebar(),
+       'hide-sidebar': themeService.isHideSidebar()
+     }">
+
+    <div class="logo">
+        <a routerLink="/">
+            <img [src]="logoPath" alt="Logo" class="logo-img">
+        </a>
+    </div>
+
+    <div class="burger-menu" [ngClass]="{'active': !isToggled}" (click)="toggle()">
+        <span class="top-bar"></span>
+        <span class="middle-bar"></span>
+        <span class="bottom-bar"></span>
+    </div>
+
+    <ng-scrollbar visibility="hover" style="height: 100vh;">
+        <div class="sidebar-inner">
+            <div class="sidebar-menu">
+                <mat-accordion>
+                    @for (menuItem of menuData; track trackByMenuId($index, menuItem)) {
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <mat-icon class="sidebar-icon">{{ menuItem.icon }}</mat-icon>
+                                    <span class="title">{{ menuItem.moduleDescription }}</span>
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+
+                            <ul class="sidebar-sub-menu">
+                                @for (item of menuItem.menus; track trackByMenuItemId($index, item)) {
+                                    @if (item.isVisible) {
+                                        <li class="sidemenu-item">
+                                            <a [routerLink]="[item.controller, item.view]"
+                                               routerLinkActive="active"
+                                               [routerLinkActiveOptions]="{exact: true}"
+                                               class="sidemenu-link">
+                                                {{ item.description }}
+                                            </a>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </mat-expansion-panel>
+                    }
+                </mat-accordion>
+            </div>
+        </div>
+    </ng-scrollbar>
+</div>

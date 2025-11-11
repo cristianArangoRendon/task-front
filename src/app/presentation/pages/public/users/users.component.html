@@ -1,0 +1,238 @@
+@if (isLoading) {
+    <app-loading message="Cargando usuarios"></app-loading>
+}
+
+@if (!isLoading) {
+    <div class="header-actions-card mb-25">
+        <div class="d-flex align-items-center">
+            <h6 class="mb-0">Gestión de Usuarios</h6>
+            <div class="header-buttons ms-auto">
+                <button
+                    mat-raised-button
+                    class="primary-btn"
+                    (click)="addNewUser()"
+                >
+                    <mat-icon>person_add</mat-icon>
+                    Crear Usuario
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-card mb-25">
+        <div class="filter-header">
+            <mat-icon class="filter-icon">filter_alt</mat-icon>
+            <h6>Filtrar Usuarios</h6>
+        </div>
+        <form [formGroup]="filterForm" class="filter-form">
+            <div class="filter-controls">
+                <div class="filter-item">
+                    <label>
+                        <mat-icon>search</mat-icon>
+                        Buscar
+                    </label>
+                    <input 
+                        type="text" 
+                        formControlName="searchTerm"
+                        placeholder="Nombre o email..."
+                        class="search-input"
+                    />
+                </div>
+                <div class="filter-item">
+                    <label>
+                        <mat-icon>toggle_on</mat-icon>
+                        Estado
+                    </label>
+                    <select 
+                        formControlName="isActiveUser"
+                        class="status-select"
+                    >
+                        <option [value]="null">Todos</option>
+                        <option [value]="true">Activos</option>
+                        <option [value]="false">Inactivos</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button
+                    type="button"
+                    mat-raised-button
+                    class="apply-btn"
+                    (click)="applyFilters()"
+                >
+                    <mat-icon>check</mat-icon>
+                    Aplicar Filtros
+                </button>
+                <button
+                    type="button"
+                    mat-raised-button
+                    class="clear-btn"
+                    (click)="clearFilters()"
+                >
+                    <mat-icon>clear</mat-icon>
+                    Limpiar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="pagination-controls-card mb-25">
+        <div class="pagination-controls">
+            <div class="control-group">
+                <mat-icon class="control-icon">grid_view</mat-icon>
+                <div class="control-item">
+                    <label>Página</label>
+                    <input 
+                        type="number" 
+                        min="1" 
+                        [max]="getTotalPages()"
+                        [(ngModel)]="currentPage"
+                        (change)="onPageChange()"
+                        class="page-input"
+                    />
+                    <span class="total-info">de {{ getTotalPages() }}</span>
+                </div>
+                <div class="control-item">
+                    <label>Por página</label>
+                    <select 
+                        [(ngModel)]="paginator.pageSize"
+                        (change)="onPageSizeChange()"
+                        class="size-select"
+                    >
+                        <option [value]="6">6</option>
+                        <option [value]="12">12</option>
+                        <option [value]="24">24</option>
+                        <option [value]="48">48</option>
+                    </select>
+                </div>
+            </div>
+            <div class="pagination-info">
+                <mat-icon class="info-icon">info</mat-icon>
+                <span>
+                    Mostrando <strong>{{ getStartRecord() }}</strong> - 
+                    <strong>{{ getEndRecord() }}</strong> de 
+                    <strong>{{ totalRecords }}</strong> usuarios
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @for (user of dataSource.data; track trackByUserId($index, user)) {
+            <div class="col-sm-6">
+                <mat-card class="mb-25 user-card">
+                    <mat-card-header>
+                        <div class="user-header-content">
+                            <div class="user-title">
+                                <h5 class="mb-2">{{ getUserFullName(user) }}</h5>
+                            </div>
+                        </div>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="user-info">
+                            <div class="info-row">
+                                <div class="info-item">
+                                    <mat-icon class="info-icon">email</mat-icon>
+                                    <div class="info-content">
+                                        <span class="info-label">Email</span>
+                                        <span class="info-value">{{ user.emailUser }}</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <mat-icon class="info-icon">badge</mat-icon>
+                                    <div class="info-content">
+                                        <span class="info-label">ID Usuario</span>
+                                        <span class="info-value">#{{ user.userId }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-item">
+                                    <mat-icon class="info-icon">phone</mat-icon>
+                                    <div class="info-content">
+                                        <span class="info-label">Teléfono</span>
+                                        <span class="info-value">{{ user.phoneUser || 'N/A' }}</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <mat-icon class="info-icon">{{ getUserStatus(user) === 'status-active' ? 'check_circle' : 'cancel' }}</mat-icon>
+                                    <div class="info-content">
+                                        <span class="info-label">Estado</span>
+                                        <span class="info-value">{{ getUserStatusText(user) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-item">
+                                    <mat-icon class="info-icon">calendar_today</mat-icon>
+                                    <div class="info-content">
+                                        <span class="info-label">Creado</span>
+                                        <span class="info-value">{{ getFormattedDate(user.createdAtUser) }}</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <mat-icon class="info-icon">update</mat-icon>
+                                    <div class="info-content">
+                                        <span class="info-label">Actualizado</span>
+                                        <span class="info-value">{{ getFormattedDate(user.updatedAtUser) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (user.specialitiesUser) {
+                                <div class="info-row">
+                                    <div class="info-item full-width">
+                                        <mat-icon class="info-icon">work</mat-icon>
+                                        <div class="info-content">
+                                            <span class="info-label">Especialidades</span>
+                                            <span class="info-value">{{ user.specialitiesUser }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="user-actions mt-3">
+                            <button
+                                mat-raised-button
+                                class="edit-btn me-2"
+                                (click)="editUser(user)"
+                            >
+                                <mat-icon>edit</mat-icon>
+                                Editar
+                            </button>
+                            <button
+                                mat-raised-button
+                                class="delete-btn"
+                                (click)="deleteUser(user)"
+                            >
+                                <mat-icon>delete</mat-icon>
+                                Eliminar
+                            </button>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        }
+    </div>
+
+    @if (dataSource.data.length === 0) {
+        <div class="empty-state-card">
+            <mat-card class="text-center py-5">
+                <mat-card-content>
+                    <mat-icon class="empty-icon mb-3">people</mat-icon>
+                    <h4 class="mb-3">No hay usuarios registrados</h4>
+                    <p class="text-muted mb-4">
+                        Comienza agregando el primer usuario al sistema
+                    </p>
+                    <button
+                        mat-raised-button
+                        class="primary-btn"
+                        (click)="addNewUser()"
+                    >
+                        <mat-icon>person_add</mat-icon>
+                        Agregar Usuario
+                    </button>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    }
+}
